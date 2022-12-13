@@ -19,7 +19,7 @@
     "proxy",
     "cyclic"
   ],
-  "main": "./lib/cors-anywhere.js",
+  "main": "lib/cors-anywhere.js",
   "files": [
     "lib/",
     "test/",
