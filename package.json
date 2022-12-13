@@ -17,7 +17,7 @@
     "cross-domain",
     "http-proxy",
     "proxy",
-    cyclic"
+    "cyclic"
   ],
   "main": "lib/cors-anywhere.js",
   "files": [
