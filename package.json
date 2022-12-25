@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "A CORS proxy server using cors-anywhere and whitelist origin hataken999.github.io",
   "author": "Hataken999",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "cors-anywhere": "^0.4.4",
