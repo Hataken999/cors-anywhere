@@ -1,49 +1,44 @@
-// Listen on a specific host via the HOST environment variable
-var host = process.env.HOST || '0.0.0.0';
-// Listen on a specific port via the PORT environment variable
-var port = process.env.PORT || 8080;
+const express = require('express');
+const cors = require('cors-anywhere');
 
-// Grab the blacklist from the command-line so that we can update the blacklist without deploying
-// again. CORS Anywhere is open by design, and this blacklist is not used, except for countering
-// immediate abuse (e.g. denial of service). If you want to block all origins except for some,
-// use originWhitelist instead.
-var originBlacklist = parseEnvList(process.env.CORSANYWHERE_BLACKLIST);
-var originWhitelist = parseEnvList(process.env.CORSANYWHERE_WHITELIST);
-function parseEnvList(env) {
-  if (!env) {
-    return [];
+const app = express();
+
+// Set whitelist for origins
+const whitelist = ['hataken999.github.io', '192.168.1.4:8080'];
+
+// Set whitelist for IP addresses
+const whitelistIP = ['103.144.175.195'];
+
+// Set CORS options
+const corsOptions = {
+  origin: (origin, callback) => {
+    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    if (whitelist.indexOf(origin) !== -1) {
+      if (whitelistIP.indexOf(ip) !== -1) {
+        callback(null, true);
+      }
+    } else {
+      callback(new Error('Your IP Address is not allowed to use this proxy!'));
+    }
   }
-  return env.split(',');
-}
+};
 
-// Set up rate-limiting to avoid abuse of the public CORS Anywhere server.
-var checkRateLimit = require('./lib/rate-limit')(process.env.CORSANYWHERE_RATELIMIT);
+app.use(cors(corsOptions));
 
-var cors_proxy = require('./lib/cors-anywhere');
-cors_proxy.createServer({
-  originBlacklist: originBlacklist,
-  originWhitelist: originWhitelist,
-  requireHeader: ['origin', 'x-requested-with'],
-  checkRateLimit: checkRateLimit,
-  removeHeaders: [
-    'cookie',
-    'cookie2',
-    // Strip Heroku-specific headers
-    'x-request-start',
-    'x-request-id',
-    'via',
-    'connect-time',
-    'total-route-time',
-    // Other Heroku added debug headers
-    // 'x-forwarded-for',
-    // 'x-forwarded-proto',
-    // 'x-forwarded-port',
-  ],
-  redirectSameOrigin: true,
-  httpProxyOptions: {
-    // Do not add X-Forwarded-For, etc. headers, because Heroku already adds it.
-    xfwd: false,
-  },
-}).listen(port, host, function() {
-  console.log('Running CORS Anywhere on ' + host + ':' + port);
+app.get('/', (req, res) => {
+  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  if (whitelistIP.indexOf(ip) !== -1) {
+    res.send('Selamat datang, Hataken999!');
+  } else {
+    res.send('Proxy hanya dapat digunakan oleh Hataken999!');
+  }
+});
+
+app.get('*', (req, res) => {
+  res.send('Route salah! Silahkan kembali ke main route.');
+});
+
+const port = process.env.PORT || 8080;
+app.listen(port, () => {
+  console.log(`CORS proxy server is listening on port ${port}`);
 });
