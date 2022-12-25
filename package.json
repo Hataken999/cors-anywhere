@@ -1,12 +1,13 @@
 {
-  "name": "cors-proxy-server",
+  "name": "cors-proxy",
   "version": "1.0.0",
-  "description": "A CORS proxy server using cors-anywhere and whitelist origin hataken999.github.io",
-  "author": "Hataken999",
+  "description": "CORS proxy server using Node.js and cors-anywhere",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
+  "author": "Hataken999",
+  "license": "MIT",
   "dependencies": {
     "cors-anywhere": "^0.4.4",
     "express": "^4.17.1"
